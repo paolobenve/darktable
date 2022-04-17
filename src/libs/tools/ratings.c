@@ -107,7 +107,15 @@ void gui_init(dt_lib_module_t *self)
 
   /* set size of navigation draw area */
   gtk_widget_set_name(self->widget, "lib-rating-stars");
-  dt_action_define(&darktable.control->actions_thumb, NULL, "rating", drawing, &dt_action_def_rating);
+  dt_action_t *ac = dt_action_define(&darktable.control->actions_thumb, NULL, N_("rating"), drawing, &dt_action_def_rating);
+  dt_shortcut_register(ac, 0, 0, GDK_KEY_0, 0);
+  dt_shortcut_register(ac, 1, 0, GDK_KEY_1, 0);
+  dt_shortcut_register(ac, 2, 0, GDK_KEY_2, 0);
+  dt_shortcut_register(ac, 3, 0, GDK_KEY_3, 0);
+  dt_shortcut_register(ac, 4, 0, GDK_KEY_4, 0);
+  dt_shortcut_register(ac, 5, 0, GDK_KEY_5, 0);
+  dt_shortcut_register(ac, 6, 0, GDK_KEY_r, 0);
+
 }
 
 void gui_cleanup(dt_lib_module_t *self)
@@ -218,6 +226,9 @@ static gboolean _lib_ratings_leave_notify_callback(GtkWidget *widget, GdkEventCr
 
 
 
-// modelines: These editor modelines have been set for all relevant files by tools/update_modelines.sh
+// clang-format off
+// modelines: These editor modelines have been set for all relevant files by tools/update_modelines.py
 // vim: shiftwidth=2 expandtab tabstop=2 cindent
 // kate: tab-indents: off; indent-width 2; replace-tabs on; indent-mode cstyle; remove-trailing-spaces modified;
+// clang-format on
+

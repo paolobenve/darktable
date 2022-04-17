@@ -93,7 +93,8 @@ typedef struct dt_bauhaus_slider_data_t
 typedef enum dt_bauhaus_combobox_alignment_t
 {
   DT_BAUHAUS_COMBOBOX_ALIGN_LEFT = 0,
-  DT_BAUHAUS_COMBOBOX_ALIGN_RIGHT = 1
+  DT_BAUHAUS_COMBOBOX_ALIGN_RIGHT = 1,
+  DT_BAUHAUS_COMBOBOX_ALIGN_MIDDLE = 2
 } dt_bauhaus_combobox_alignment_t;
 
 // data portion for a combobox
@@ -111,7 +112,6 @@ typedef struct dt_bauhaus_combobox_data_t
   int active;           // currently active element
   int defpos;           // default position
   int editable;         // 1 if arbitrary text may be typed
-  int scale;            // scale of the combo popup from combo widget
   dt_bauhaus_combobox_alignment_t text_align; // if selected text in combo should be aligned to the left/right
   char *text;           // to hold arbitrary text if editable
   PangoEllipsizeMode entries_ellipsis;
@@ -162,6 +162,8 @@ typedef struct dt_bauhaus_widget_t
   void *quad_paint_data;
   // quad is a toggle button?
   int quad_toggle;
+  // show quad icon or space
+  gboolean show_quad;
   // if a section label
   gboolean is_section;
 
@@ -197,7 +199,7 @@ typedef struct dt_bauhaus_t
   float mouse_x, mouse_y;
   // time when the popup window was opened. this is sortof a hack to
   // detect `double clicks between windows' to reset the combobox.
-  double opentime;
+  guint32 opentime;
   // pointer position when popup window is closed
   float end_mouse_x, end_mouse_y;
   // used to determine whether the user crossed the line already.
@@ -264,6 +266,8 @@ void dt_bauhaus_widget_set_quad_toggle(GtkWidget *w, int toggle);
 void dt_bauhaus_widget_set_quad_active(GtkWidget *w, int active);
 // get active status for the quad toggle button:
 int dt_bauhaus_widget_get_quad_active(GtkWidget *w);
+// set quad visibility:
+void dt_bauhaus_widget_set_quad_visibility(GtkWidget *w, const gboolean visible);
 // set pointer to iop params field:
 void dt_bauhaus_widget_set_field(GtkWidget *w, gpointer field, dt_introspection_type_t field_type);
 
@@ -347,7 +351,6 @@ void dt_bauhaus_combobox_insert_full(GtkWidget *widget, const char *text, dt_bau
                                      gpointer data, void (*free_func)(void *data), int pos);
 int dt_bauhaus_combobox_length(GtkWidget *widget);
 void dt_bauhaus_combobox_set_editable(GtkWidget *w, int editable);
-void dt_bauhaus_combobox_set_popup_scale(GtkWidget *widget, int scale);
 void dt_bauhaus_combobox_set_selected_text_align(GtkWidget *widget, const dt_bauhaus_combobox_alignment_t text_align);
 int dt_bauhaus_combobox_get_editable(GtkWidget *w);
 const char *dt_bauhaus_combobox_get_text(GtkWidget *w);
@@ -376,6 +379,9 @@ static inline void set_color(cairo_t *cr, GdkRGBA color)
   cairo_set_source_rgba(cr, color.red, color.green, color.blue, color.alpha);
 }
 
-// modelines: These editor modelines have been set for all relevant files by tools/update_modelines.sh
+// clang-format off
+// modelines: These editor modelines have been set for all relevant files by tools/update_modelines.py
 // vim: shiftwidth=2 expandtab tabstop=2 cindent
 // kate: tab-indents: off; indent-width 2; replace-tabs on; indent-mode cstyle; remove-trailing-spaces modified;
+// clang-format on
+
