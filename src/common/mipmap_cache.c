@@ -1194,10 +1194,26 @@ static void _init_8(uint8_t *buf, uint32_t *width, uint32_t *height, float *isca
     memset(filename, 0, sizeof(filename));
     dt_image_full_path(imgid, filename, sizeof(filename), &from_cache);
 
-    const char *c = filename + strlen(filename);
-    while(*c != '.' && c > filename) c--;
-    if(!strcasecmp(c, ".jpg"))
+    // identify jpg by magic numbers
+    const uint8_t jpeg_magicbytes[3] = { 0xFF, 0xD8, 0xFF };
+    uint8_t first3bytes[3] = { 0 };
+    FILE *f = g_fopen(filename, "rb");
+    if(!f)
     {
+      fprintf(stderr, "[jpeg_open] Error: failed to open '%s' for reading\n", filename);
+      return;
+    }
+    if(fread(first3bytes, 1, 3, f) != 3)
+    {
+      fclose(f);
+      fprintf(stderr, "[jpeg_open] Error: '%s' file is empty or read error.\n", filename);
+      return;
+    }
+    fclose(f);
+    if(memcmp(first3bytes, jpeg_magicbytes, 3) == 0)
+    {
+      // magic numbers said that it's jpg!
+
       // try to load jpg
       dt_imageio_jpeg_t jpg;
       if(!dt_imageio_jpeg_read_header(filename, &jpg))
